@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+        <title>Redmine Ch3@t3r time log</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <style>#issuesTable, #error, #success { display: none; } ol.breadcrumb.footer li::before { content: ""}</style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="jumbotron jumbotron-fluid mt-4">
+                <div class="container">
+                    <div class="row">
+                        <div id="error" class="alert alert-danger col" role="alert"><strong>Oops! Something went wrong.</strong> Check your API key, please.</div>
+                        <div id="success" class="alert alert-success col" role="alert"><strong>Well done!</strong> Time has been reported, feel free to take part on a катка &#9786;</div>
+                    </div>
+                    <h1 class="display-4">Redmine Ch3@t3r time log</h1>
+                    <p class="lead">That cheat allow you to report fixed amount of hours for multiple days in one click. That tool was developed for ongoing (Time-and-Material) projects, where each developer should work X hours every day.</p>
+                    <div class="row">
+                        <div id="authForm" class="col">
+                            <div class="form-group">
+                                <label for="apiKey">API Key</label>
+                                <input type="text" class="form-control" id="apiKey" aria-describedby="apiKeyHelp" placeholder="Enter API key">
+                                <small id="apiKeyHelp" class="form-text text-muted">You can find your API key on your account page (<a target="_blank" href="/my/account">/my/account</a>) when logged in, on the right-hand pane of the default layout.</small>
+                            </div>
+                            <button id="auth" type="button" class="btn btn-primary">Confirm Identity</button>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <table class="table" id="issuesTable">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Project</th>
+                                    <th scope="col">Subject</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="issuesList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <nav>
+                <ol class="breadcrumb footer">
+                    <li class="breadcrumb-item">Built with &#128404; by </li>
+                    <li class="breadcrumb-item"><a href="http://rakshazi.cf" target="_blank">Nikita Chernyi</a></li>
+                    <li class="breadcrumb-item">and</li>
+                    <li class="breadcrumb-item"><a href="#">Evgeny Nyagu</a></li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="modal fade" id="timeFormModal" tabindex="-1" role="dialog" aria-labelledby="timeFormModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="timeFormModalLabel">Log time</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cancel">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="#modalBody">
+                        <div class="form-group">
+                            <label for="timeFormDates">Date range</label>
+                            <input type="text" class="form-control" id="timeFormDates" aria-describedby="timeFormDatesHelp" placeholder="Enter a date range">
+                            <small id="timeFormDatesHelp" class="form-text text-muted"><b>ONLY</b> Mon-Fri days will be used from date range</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="timeFormHours">Hours per date</label>
+                            <input type="number" class="form-control" id="timeFormHours" aria-describedby="timeFormHoursHelp" placeholder="Enter amount of hours">
+                            <small id="timeFormHoursHelp" class="form-text text-muted">That number will be added to each day in date range</small>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="cancel" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" id="create" class="btn btn-primary">Log time</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.27/moment.min.js" integrity="sha256-TkEcmf5KSG2zToAaUzkq6G+GWezMQ4lEtaBiyaq6Jb4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.27/daterangepicker.min.js" integrity="sha256-fuPJ7xvV6OPcIGSJd2Xj7s/+2aWsVGapv+Uj/cuVOzk=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.27/daterangepicker.min.css" integrity="sha256-m4uCSkjNdbrhPh2GPVsyB8nuDl5uiF/DpAhSGdqujrc=" crossorigin="anonymous" />
+        <script>
+            window.apiUrl = window.location.origin + '/';
+$(document).ready(function(){
+
+    // Authorization and tasks preload
+    $('#auth').click(function(e){
+        $('#auth').prop('disabled', true);
+        $('#error').hide();
+        $('#success').hide();
+        window.apiParams = '?key=' + $('#apiKey').val();
+
+        $.get(window.apiUrl + 'issues.json' + window.apiParams + '&assigned_to_id=me', function(data){
+            $('#authForm').hide();
+            $.each(data.issues, function (index, item) {
+                var html = '<tr> \
+                    <th scope="row">' + item.id + '</th> \
+                    <td>' + item.project.name + '</td> \
+                    <td><a target="_blank" href="' + window.apiUrl + 'issues/' + item.id + '">' + item.subject + '</a></td> \
+                    <td>' + item.status.name + '</td> \
+                    <td><button class="btn btn-primary logTime" data-issue-id="' + item.id +'"  data-toggle="modal" data-target="#timeFormModal">Log time</button></td> \
+                    </tr>'
+                $('#issuesList').append(html);
+            });
+            $('#issuesTable').show();
+        }).fail(function() {
+            $('#error').show();
+        }).always(function(){
+            $('#auth').prop('disabled', false);
+        });
+    });
+
+    // Create time entries
+    $('#create').click(function(e){
+        $(this).prop('disabled', true);
+        $.each(window.dates, function (index, spent_on) {
+            data = {
+                time_entry: {
+                    issue_id: window.issueId,
+                    spent_on: spent_on,
+                    hours: $('#timeFormHours').val()
+                },
+            };
+            $.post(window.apiUrl + 'time_entries.json' + window.apiParams, data);
+        });
+        $(this).prop('disabled', false);
+        $('#cancel').click();
+        $('#success').show();
+    });
+
+    // Modal config
+    $('#timeFormModal').on('show.bs.modal', function (event) {
+        window.issueId = $(event.relatedTarget).data('issue-id');
+    });
+
+    // Calendar
+    $('#timeFormDates').daterangepicker({
+        "showCustomRangeLabel": false,
+        "alwaysShowCalendars": true,
+        "parentEl": "#modalBody",
+        "opens": "center"
+    }, function(startDate, endDate, label) {
+        var currentDay;
+        var DATEFORMAT = 'YYYY-MM-DD';
+        window.dates = [];
+
+        while (moment(startDate).unix() < moment(endDate).unix()) {
+            currentDay = moment(startDate, DATEFORMAT).day();
+
+            if (currentDay !== 0 && currentDay !== 6) {
+                window.dates.push(moment(startDate, DATEFORMAT).format(DATEFORMAT));
+            }
+
+            startDate = moment(startDate, DATEFORMAT).add(1, 'days').format(DATEFORMAT);
+        }
+    });
+});
+        </script>
+    </body>
+</html>
